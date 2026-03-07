@@ -16,41 +16,54 @@ jobs:
         run: |
           mkdir -p img_cam
           BASE="http://bousai-kasen.pref.okinawa.jp/river/kasen/img_cam"
-          CAMERAS="05 16 22 44 19 23 17 24"
-          for PID in $CAMERAS; do
-            curl -sf --max-time 15 --retry 2 \
+
+          for N in $(seq -w 1 99); do
+            PID=$(printf "%02d" $N)
+            curl -sf --max-time 10 --retry 1 \
               -H "Referer: http://bousai-kasen.pref.okinawa.jp/" \
               -H "User-Agent: Mozilla/5.0" \
               -o "img_cam/p-${PID}.jpg" \
-              "${BASE}/p-${PID}.jpg" && echo "OK: p-${PID}" || echo "NG: p-${PID}"
+              "${BASE}/p-${PID}.jpg" && echo "OK: p-${PID}" || rm -f "img_cam/p-${PID}.jpg"
           done
 
-      - name: status.json を生成
+          echo "=== 取得成功一覧 ==="
+          ls img_cam/
+
+      - name: cameras.json を生成
         run: |
           python3 << 'PYEOF'
-          import json, os
+          import json, os, glob
           from datetime import datetime, timezone, timedelta
+
           JST = timezone(timedelta(hours=9))
           now = datetime.now(JST)
-          cameras = ['05','16','22','44','19','23','17','24']
-          result = []
-          for pid in cameras:
-              path = f'img_cam/p-{pid}.jpg'
-              exists = os.path.exists(path)
-              size = os.path.getsize(path) if exists else 0
-              result.append({'pid': pid, 'ok': exists, 'size': size})
+
+          # 取得できた画像からカメラリストを作成
+          files = sorted(glob.glob('img_cam/p-*.jpg'))
+          cameras = []
+          for f in files:
+              pid = os.path.basename(f).replace('p-','').replace('.jpg','')
+              size = os.path.getsize(f)
+              # 100バイト未満はエラー画像の可能性があるのでスキップ
+              if size > 100:
+                  cameras.append({'pid': pid, 'size': size})
+
           status = {
               'last_fetch_jst': now.strftime('%Y-%m-%d %H:%M:%S'),
-              'cameras': result
+              'camera_count': len(cameras),
+              'cameras': cameras
           }
-          with open('status.json', 'w') as f:
+          with open('cameras.json', 'w', encoding='utf-8') as f:
               json.dump(status, f, ensure_ascii=False, indent=2)
-          print(json.dumps(status, ensure_ascii=False, indent=2))
+
+          print(f"有効カメラ数: {len(cameras)}")
+          for c in cameras:
+              print(f"  p-{c['pid']} ({c['size']} bytes)")
           PYEOF
 
       - name: コミット・プッシュ
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add img_cam/ status.json
+          git add img_cam/ cameras.json
           git diff --staged --quiet || git commit -m "🌊 河川画像更新 $(TZ='Asia/Tokyo' date '+%Y-%m-%d %H:%M') JST" && git push
