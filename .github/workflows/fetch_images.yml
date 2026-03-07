@@ -17,8 +17,8 @@ jobs:
           mkdir -p img_cam
           BASE="http://bousai-kasen.pref.okinawa.jp/river/kasen/img_cam"
 
-          for N in $(seq -w 1 99); do
-            PID=$(printf "%02d" $N)
+          for N in $(seq 1 99); do
+            PID=$(echo $N | awk '{printf "%02d", $1}')
             curl -sf --max-time 10 --retry 1 \
               -H "Referer: http://bousai-kasen.pref.okinawa.jp/" \
               -H "User-Agent: Mozilla/5.0" \
@@ -38,13 +38,11 @@ jobs:
           JST = timezone(timedelta(hours=9))
           now = datetime.now(JST)
 
-          # 取得できた画像からカメラリストを作成
           files = sorted(glob.glob('img_cam/p-*.jpg'))
           cameras = []
           for f in files:
               pid = os.path.basename(f).replace('p-','').replace('.jpg','')
               size = os.path.getsize(f)
-              # 100バイト未満はエラー画像の可能性があるのでスキップ
               if size > 100:
                   cameras.append({'pid': pid, 'size': size})
 
