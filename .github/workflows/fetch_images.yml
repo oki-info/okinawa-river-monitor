@@ -1,0 +1,111 @@
+name: 河川カメラ画像取得
+
+on:
+  schedule:
+    # 10分ごとに実行（UTC基準 → 日本時間は+9時間）
+    - cron: '*/10 * * * *'
+  # 手動でも実行できる
+  workflow_dispatch:
+
+jobs:
+  fetch-images:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: 画像フォルダを作成
+        run: mkdir -p img_cam
+
+      - name: 河川カメラ画像を取得
+        run: |
+          BASE="http://bousai-kasen.pref.okinawa.jp/river/kasen/img_cam"
+
+          # 取得するカメラのp番号リスト
+          CAMERAS="05 16 22 44 19 23 17 24"
+
+          SUCCESS=0
+          FAIL=0
+
+          for PID in $CAMERAS; do
+            URL="${BASE}/p-${PID}.jpg"
+            OUT="img_cam/p-${PID}.jpg"
+
+            echo "取得中: $URL"
+
+            if curl -sf \
+              --max-time 15 \
+              --retry 2 \
+              --retry-delay 3 \
+              -H "Referer: http://bousai-kasen.pref.okinawa.jp/" \
+              -H "User-Agent: Mozilla/5.0 (compatible; RiverMonitor/1.0)" \
+              -o "$OUT" \
+              "$URL"; then
+              SIZE=$(wc -c < "$OUT")
+              echo "  ✅ p-${PID}.jpg (${SIZE} bytes)"
+              SUCCESS=$((SUCCESS + 1))
+            else
+              echo "  ❌ p-${PID}.jpg 取得失敗"
+              FAIL=$((FAIL + 1))
+            fi
+          done
+
+          echo "取得完了: 成功 ${SUCCESS} / 失敗 ${FAIL}"
+
+      - name: 取得日時をJSONに記録
+        run: |
+          NOW=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
+          NOW_JST=$(TZ='Asia/Tokyo' date '+%Y-%m-%d %H:%M:%S')
+
+          # 各ファイルのサイズも記録
+          CAMERA_INFO='[]'
+          for PID in 05 16 22 44 19 23 17 24; do
+            FILE="img_cam/p-${PID}.jpg"
+            if [ -f "$FILE" ]; then
+              SIZE=$(wc -c < "$FILE")
+              CAMERA_INFO=$(echo "$CAMERA_INFO" | \
+                python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          data.append({'pid': '${PID}', 'ok': True, 'size': ${SIZE}})
+          print(json.dumps(data))
+          ")
+            else
+              CAMERA_INFO=$(echo "$CAMERA_INFO" | \
+                python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          data.append({'pid': '${PID}', 'ok': False, 'size': 0})
+          print(json.dumps(data))
+          ")
+            fi
+          done
+
+          python3 -c "
+          import json
+          status = {
+            'last_fetch_utc': '${NOW}',
+            'last_fetch_jst': '${NOW_JST}',
+            'cameras': ${CAMERA_INFO}
+          }
+          print(json.dumps(status, ensure_ascii=False, indent=2))
+          " > status.json
+
+          cat status.json
+
+      - name: 変更をコミット・プッシュ
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add img_cam/ status.json
+
+          # 変更がある場合のみコミット
+          if git diff --staged --quiet; then
+            echo "変更なし、スキップ"
+          else
+            NOW_JST=$(TZ='Asia/Tokyo' date '+%Y-%m-%d %H:%M')
+            git commit -m "🌊 河川画像更新 ${NOW_JST} JST"
+            git push
+          fi
