@@ -1,0 +1,45 @@
+{
+  "last_fetch_jst": "2026-03-07 22:14:15",
+  "cameras": [
+    {
+      "pid": "05",
+      "ok": true,
+      "size": 59824
+    },
+    {
+      "pid": "16",
+      "ok": true,
+      "size": 79511
+    },
+    {
+      "pid": "22",
+      "ok": true,
+      "size": 55857
+    },
+    {
+      "pid": "44",
+      "ok": true,
+      "size": 20535
+    },
+    {
+      "pid": "19",
+      "ok": true,
+      "size": 40113
+    },
+    {
+      "pid": "23",
+      "ok": true,
+      "size": 45119
+    },
+    {
+      "pid": "17",
+      "ok": true,
+      "size": 48826
+    },
+    {
+      "pid": "24",
+      "ok": true,
+      "size": 57621
+    }
+  ]
+}
