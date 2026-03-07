@@ -15,6 +15,7 @@
   --teal3: rgba(45,212,191,.15);
   --red:   #ef4444;
   --green: #22c55e;
+  --amber: #f59e0b;
   --muted: #5a7080;
   --text:  #dde6ef;
   --mono:  'JetBrains Mono', monospace;
@@ -23,6 +24,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;}
 body{font-family:var(--sans);background:var(--ink);color:var(--text);display:flex;flex-direction:column;min-height:100%;}
+
 header{background:var(--panel);border-bottom:1px solid var(--edge);padding:9px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0;position:sticky;top:0;z-index:100;}
 .h-brand{display:flex;align-items:center;gap:9px;}
 .h-icon{width:32px;height:32px;background:#0d9488;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
@@ -31,11 +33,13 @@ header{background:var(--panel);border-bottom:1px solid var(--edge);padding:9px 1
 .h-right{text-align:right;flex-shrink:0;}
 .clock{font-family:var(--mono);font-size:16px;color:var(--teal);letter-spacing:.06em;}
 .datestr{font-family:var(--mono);font-size:8px;color:var(--muted);}
+
 .fetch-bar{padding:5px 14px;background:rgba(0,0,0,.25);border-bottom:1px solid var(--edge);display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-shrink:0;}
 .fb-label{font-family:var(--mono);font-size:10px;color:var(--muted);}
 .fb-val{font-family:var(--mono);font-size:10px;color:var(--text);}
 .pulse{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green);animation:pulse 3s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+
 .toolbar{background:var(--panel);border-bottom:1px solid var(--edge);padding:7px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0;}
 .seg{display:flex;background:rgba(0,0,0,.3);border:1px solid var(--edge);border-radius:6px;overflow:hidden;}
 .seg-btn{padding:5px 13px;background:transparent;border:none;color:var(--muted);font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .15s;}
@@ -50,6 +54,7 @@ header{background:var(--panel);border-bottom:1px solid var(--edge);padding:9px 1
 .dot{width:6px;height:6px;border-radius:50%;}
 .dot-ok{background:var(--green);box-shadow:0 0 5px #22c55e88;}
 .dot-err{background:var(--red);box-shadow:0 0 5px #ef444488;}
+
 .workspace{flex:1;padding:8px;}
 .grid{display:grid;gap:8px;}
 .grid.g1{grid-template-columns:1fr;}
@@ -63,6 +68,8 @@ header{background:var(--panel);border-bottom:1px solid var(--edge);padding:9px 1
 @media(min-width:641px) and (max-width:1024px){
   .grid.gall{grid-template-columns:repeat(3,1fr);}
 }
+
+/* ── 静止画カード ── */
 .card{background:var(--card);border:1px solid var(--edge);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;transition:border-color .3s;}
 .card.ok{border-color:rgba(34,197,94,.3);}
 .card.err{border-color:rgba(239,68,68,.25);}
@@ -86,17 +93,33 @@ header{background:var(--panel);border-bottom:1px solid var(--edge);padding:9px 1
 .foot-link:hover{color:var(--teal);}
 .foot-retry{font-size:11px;background:none;border:none;cursor:pointer;color:var(--muted);transition:color .15s;}
 .foot-retry:hover{color:var(--teal);}
+
+/* ── YouTube埋め込みカード ── */
+.yt-card{background:var(--card);border:1px solid rgba(239,68,68,.3);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;}
+.yt-head{padding:5px 10px;background:rgba(0,0,0,.3);border-bottom:1px solid var(--edge);display:flex;align-items:center;justify-content:space-between;}
+.yt-title{font-size:12px;font-weight:700;}
+.yt-loc{font-family:var(--mono);font-size:8px;color:var(--muted);}
+.yt-badge{font-family:var(--mono);font-size:8px;color:#ef4444;display:flex;align-items:center;gap:3px;white-space:nowrap;}
+.yt-dot{width:5px;height:5px;border-radius:50%;background:#ef4444;box-shadow:0 0 4px #ef4444;animation:pulse 2s infinite;}
+.yt-wrap{position:relative;aspect-ratio:4/3;background:#000;}
+.yt-wrap iframe{width:100%;height:100%;border:none;display:block;}
+.yt-foot{padding:4px 10px;background:rgba(0,0,0,.2);border-top:1px solid var(--edge);display:flex;align-items:center;justify-content:space-between;}
+.yt-foot-txt{font-family:var(--mono);font-size:8px;color:var(--muted);}
+
 .loading-msg{display:flex;align-items:center;justify-content:center;height:200px;font-family:var(--mono);font-size:12px;color:var(--muted);}
+
 .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:500;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px;}
 .lightbox.open{display:flex;}
 .lb-img{max-width:100%;max-height:80vh;object-fit:contain;border-radius:6px;}
 .lb-cap{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center;}
 .lb-close{position:absolute;top:12px;right:16px;background:none;border:none;color:#aaa;font-size:24px;cursor:pointer;}
+
 footer{background:var(--panel);border-top:1px solid var(--edge);padding:5px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .foot-l,.foot-r{font-family:var(--mono);font-size:9px;color:var(--muted);}
 </style>
 </head>
 <body>
+
 <header>
   <div class="h-brand">
     <div class="h-icon">🌊</div>
@@ -110,16 +133,18 @@ footer{background:var(--panel);border-top:1px solid var(--edge);padding:5px 14px
     <div class="datestr" id="datestr">---- / -- / --</div>
   </div>
 </header>
+
 <div class="fetch-bar">
   <span class="pulse"></span>
   <span class="fb-label">最終取得（JST）:</span>
   <span class="fb-val" id="fb-time">読込中…</span>
-  <span class="fb-sep" style="color:rgba(255,255,255,.09)">|</span>
+  <span style="color:rgba(255,255,255,.09)">|</span>
   <span class="fb-label">検出カメラ数:</span>
   <span class="fb-val" id="fb-count">—</span>
-  <span class="fb-sep" style="color:rgba(255,255,255,.09)">|</span>
+  <span style="color:rgba(255,255,255,.09)">|</span>
   <span class="fb-label">GitHub Actions が自動更新</span>
 </div>
+
 <div class="toolbar">
   <span style="font-family:var(--mono);font-size:10px;color:var(--muted)">表示:</span>
   <div class="seg">
@@ -135,41 +160,101 @@ footer{background:var(--panel);border-top:1px solid var(--edge);padding:5px 14px
     <div class="s-pill"><div class="dot dot-err"></div><span id="cnt-err">0</span> エラー</div>
   </div>
 </div>
+
 <div class="workspace">
   <div id="grid" class="grid g4">
     <div class="loading-msg">カメラ情報を読み込み中…</div>
   </div>
 </div>
+
 <div class="lightbox" id="lb" onclick="closeLb()">
   <button class="lb-close">✕</button>
   <img class="lb-img" id="lb-img" src="" alt="">
   <div class="lb-cap" id="lb-cap"></div>
 </div>
+
 <footer>
-  <div class="foot-l">沖縄県庁 土木建築部 河川課 ｜ 出典: bousai-kasen.pref.okinawa.jp</div>
+  <div class="foot-l">沖縄県庁 土木建築部 河川課 ｜ 出典: bousai-kasen.pref.okinawa.jp / city.okinawa.okinawa.jp</div>
   <div class="foot-r" id="foot-r">次回ページ更新: --:--</div>
 </footer>
+
 <script>
+// ── YouTube埋め込みで表示するカメラ（静止画取得不可のもの）──
+const YT_CAMERAS = [
+  {
+    id: 'DBju-AkvIVM',
+    name: '🌊 小波津川',
+    loc: '西原町・金秀鉄工前',
+    ytUrl: 'https://www.youtube.com/watch?v=DBju-AkvIVM'
+  },
+  {
+    id: 'EkbG_VYkExM',
+    name: '🌊 小波津川',
+    loc: '西原町・さわふじ保育園前',
+    ytUrl: 'https://www.youtube.com/watch?v=EkbG_VYkExM'
+  }
+];
+
+// ── 沖縄市カメラのファイル名マッピング ──
+const EXTRA_CAM_INFO = {
+  'okinawa-city-hija':   { name: '🌊 比謝川',   loc: '沖縄市（水位監視）', link: 'https://www.city.okinawa.okinawa.jp/k058-003/anshin/bousai/saigaijouhou/22230.html' },
+  'okinawa-city-awase1': { name: '🌊 泡瀬川①',  loc: '沖縄市（水位監視）', link: 'https://www.city.okinawa.okinawa.jp/k058-003/anshin/bousai/saigaijouhou/22230.html' },
+  'okinawa-city-awase2': { name: '🌊 泡瀬川②',  loc: '沖縄市（水位監視）', link: 'https://www.city.okinawa.okinawa.jp/k058-003/anshin/bousai/saigaijouhou/22230.html' },
+};
+
 let CAMERAS = [];
 let mode = 4;
 let nextAt = null;
-let lbIdx  = null;
+let lbIdx = null;
 const st = {};
 
 function pad(n){ return String(n).padStart(2,'0'); }
 function fmt(n){ return String(n).padStart(2,'0'); }
 function esc(s){ return String(s).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
-function imgSrc(pid){ return `img_cam/p-${pad(pid)}.jpg?t=${Date.now()}`; }
+function imgSrc(filename){ return `img_cam/${filename}?t=${Date.now()}`; }
 
+// cameras.json を読み込んでカメラリストを構築
 async function loadCameras(){
   try {
     const res  = await fetch('cameras.json?t=' + Date.now());
     const data = await res.json();
     document.getElementById('fb-time').textContent  = data.last_fetch_jst || '—';
     document.getElementById('fb-count').textContent = data.camera_count + '台';
+
+    // 沖縄県河川カメラ（p-XX.jpg）
     CAMERAS = data.cameras.map(c => ({
-      pid: c.pid, name: '🌊 カメラ ' + c.pid, loc: 'p-' + c.pid
+      type:     'static',
+      filename: `p-${c.pid}.jpg`,
+      name:     '🌊 カメラ ' + c.pid,
+      loc:      'p-' + c.pid,
+      link:     'http://bousai-kasen.pref.okinawa.jp/river/kasen/'
     }));
+
+    // 沖縄市カメラ（extra_cameras）
+    if (data.extra_cameras) {
+      data.extra_cameras.forEach(c => {
+        const info = EXTRA_CAM_INFO[c.key] || {};
+        CAMERAS.push({
+          type:     'static',
+          filename: `${c.key}.jpg`,
+          name:     info.name || '🌊 ' + c.name,
+          loc:      info.loc  || c.loc,
+          link:     info.link || '#'
+        });
+      });
+    }
+
+    // YouTube埋め込みカメラ（末尾に追加）
+    YT_CAMERAS.forEach(y => {
+      CAMERAS.push({
+        type:  'youtube',
+        ytId:  y.id,
+        name:  y.name,
+        loc:   y.loc,
+        ytUrl: y.ytUrl
+      });
+    });
+
     render();
   } catch(e) {
     document.getElementById('fb-time').textContent = '(まだ実行されていません)';
@@ -184,54 +269,91 @@ function render(){
   const modeMap = {1:'g1',2:'g2',4:'g4',8:'g8',all:'gall'};
   grid.className = 'grid ' + (modeMap[mode] || 'g4');
   const count = mode === 'all' ? CAMERAS.length : Math.min(mode, CAMERAS.length);
+
   for(let i = 0; i < count; i++){
     const cam = CAMERAS[i];
     if(!cam) continue;
-    const d = document.createElement('div');
-    d.className = 'card';
-    d.id = 'card-' + i;
-    d.innerHTML = `
-      <div class="card-head">
-        <div>
-          <div class="card-river">${esc(cam.name)}</div>
-          <div class="card-loc">${esc(cam.loc)}</div>
+
+    if(cam.type === 'youtube'){
+      // YouTube埋め込みカード
+      const d = document.createElement('div');
+      d.className = 'yt-card';
+      d.id = 'card-' + i;
+      d.innerHTML = `
+        <div class="yt-head">
+          <div>
+            <div class="yt-title">${esc(cam.name)}</div>
+            <div class="yt-loc">${esc(cam.loc)}</div>
+          </div>
+          <div class="yt-badge"><div class="yt-dot"></div>LIVE</div>
         </div>
-        <div class="live-badge"><div class="live-dot"></div>10分更新</div>
-      </div>
-      <div class="card-img">
-        <div class="state-ov" id="ld-${i}"><div class="spin"></div><div class="state-txt">読込中…</div></div>
-        <div class="state-ov" id="er-${i}" style="display:none">
-          <div style="font-size:22px;opacity:.2">📡</div>
-          <div class="state-txt">画像未取得<br><span style="color:rgba(245,158,11,.7)">p-${pad(cam.pid)}.jpg</span></div>
-          <button onclick="retry(${i})" style="margin-top:4px;padding:5px 14px;background:var(--teal3);border:1px solid rgba(45,212,191,.4);border-radius:5px;color:var(--teal);font-family:var(--mono);font-size:10px;cursor:pointer">↺ 再取得</button>
+        <div class="yt-wrap">
+          <iframe
+            src="https://www.youtube.com/embed/${cam.ytId}?autoplay=1&mute=1&controls=1&rel=0"
+            allow="autoplay; encrypted-media"
+            allowfullscreen
+            loading="lazy">
+          </iframe>
         </div>
-        <img class="cam-img" id="img-${i}" style="opacity:0" src=""
-             onload="imgOK(${i})" onerror="imgNG(${i})" onclick="openLb(${i})">
-        <div class="img-bot">
-          <span class="ov-time" id="ov-${i}">—</span>
-          <span class="ov-pid">p-${pad(cam.pid)}</span>
+        <div class="yt-foot">
+          <span class="yt-foot-txt">YouTube ライブ配信</span>
+          <a class="foot-link" href="${cam.ytUrl}" target="_blank">YouTubeで開く↗</a>
+        </div>`;
+      grid.appendChild(d);
+      st[i] = 'ok';  // YTカードはエラーカウントしない
+
+    } else {
+      // 静止画カード
+      const d = document.createElement('div');
+      d.className = 'card';
+      d.id = 'card-' + i;
+      d.innerHTML = `
+        <div class="card-head">
+          <div>
+            <div class="card-river">${esc(cam.name)}</div>
+            <div class="card-loc">${esc(cam.loc)}</div>
+          </div>
+          <div class="live-badge"><div class="live-dot"></div>10分更新</div>
         </div>
-      </div>
-      <div class="card-foot">
-        <span class="foot-stamp" id="st-${i}">—</span>
-        <a class="foot-link" href="http://bousai-kasen.pref.okinawa.jp/river/kasen/" target="_blank">公式サイト↗</a>
-        <button class="foot-retry" onclick="retry(${i})">↺</button>
-      </div>`;
-    grid.appendChild(d);
-    st[i] = 'loading';
-    setTimeout(() => loadImg(i), i * 150);
+        <div class="card-img">
+          <div class="state-ov" id="ld-${i}"><div class="spin"></div><div class="state-txt">読込中…</div></div>
+          <div class="state-ov" id="er-${i}" style="display:none">
+            <div style="font-size:22px;opacity:.2">📡</div>
+            <div class="state-txt">画像未取得<br><span style="color:rgba(245,158,11,.7)">${esc(cam.filename)}</span></div>
+            <button onclick="retry(${i})" style="margin-top:4px;padding:5px 14px;background:var(--teal3);border:1px solid rgba(45,212,191,.4);border-radius:5px;color:var(--teal);font-family:var(--mono);font-size:10px;cursor:pointer">↺ 再取得</button>
+          </div>
+          <img class="cam-img" id="img-${i}" style="opacity:0" src=""
+               onload="imgOK(${i})" onerror="imgNG(${i})" onclick="openLb(${i})">
+          <div class="img-bot">
+            <span class="ov-time" id="ov-${i}">—</span>
+            <span class="ov-pid">${esc(cam.filename)}</span>
+          </div>
+        </div>
+        <div class="card-foot">
+          <span class="foot-stamp" id="st-${i}">—</span>
+          <a class="foot-link" href="${cam.link}" target="_blank">公式サイト↗</a>
+          <button class="foot-retry" onclick="retry(${i})">↺</button>
+        </div>`;
+      grid.appendChild(d);
+      st[i] = 'loading';
+      setTimeout(() => loadImg(i), i * 150);
+    }
   }
   updateCounts();
 }
 
-function loadImg(i){ const img = document.getElementById('img-'+i); if(img) img.src = imgSrc(CAMERAS[i].pid); }
+function loadImg(i){
+  const img = document.getElementById('img-' + i);
+  if(img) img.src = imgSrc(CAMERAS[i].filename);
+}
 function imgOK(i){
   const img=document.getElementById('img-'+i), ld=document.getElementById('ld-'+i), card=document.getElementById('card-'+i);
   if(img) img.style.opacity='1'; if(ld) ld.style.display='none'; if(card) card.className='card ok';
   st[i]='ok';
-  const now=new Date(), ts=fmt(now.getHours())+':'+fmt(now.getMinutes())+':'+fmt(now.getSeconds());
+  const now=new Date();
   const ov=document.getElementById('ov-'+i), s=document.getElementById('st-'+i);
-  if(ov) ov.textContent=ts; if(s) s.textContent='更新: '+fmt(now.getHours())+':'+fmt(now.getMinutes());
+  if(ov) ov.textContent=fmt(now.getHours())+':'+fmt(now.getMinutes())+':'+fmt(now.getSeconds());
+  if(s)  s.textContent='更新: '+fmt(now.getHours())+':'+fmt(now.getMinutes());
   updateCounts();
 }
 function imgNG(i){
@@ -242,6 +364,7 @@ function imgNG(i){
   st[i]='error'; updateCounts();
 }
 function retry(i){
+  if(!CAMERAS[i] || CAMERAS[i].type === 'youtube') return;
   const img=document.getElementById('img-'+i), ld=document.getElementById('ld-'+i),
         er=document.getElementById('er-'+i), card=document.getElementById('card-'+i);
   if(er) er.style.display='none'; if(ld) ld.style.display='flex';
@@ -250,13 +373,18 @@ function retry(i){
 }
 function reloadAll(){
   const count = mode==='all' ? CAMERAS.length : Math.min(mode, CAMERAS.length);
-  for(let i=0;i<count;i++) retry(i);
+  for(let i=0;i<count;i++){
+    if(CAMERAS[i] && CAMERAS[i].type !== 'youtube') retry(i);
+  }
   nextAt = Date.now()+10*60*1000;
 }
 function updateCounts(){
-  let ok=0,err=0;
+  let ok=0, err=0;
   const count=mode==='all'?CAMERAS.length:Math.min(mode,CAMERAS.length);
-  for(let i=0;i<count;i++){ if(st[i]==='ok') ok++; if(st[i]==='error') err++; }
+  for(let i=0;i<count;i++){
+    if(st[i]==='ok')    ok++;
+    if(st[i]==='error') err++;
+  }
   document.getElementById('cnt-ok').textContent=ok;
   document.getElementById('cnt-err').textContent=err;
 }
@@ -266,10 +394,10 @@ function setMode(n){
   Object.keys(st).forEach(k=>delete st[k]); render();
 }
 function openLb(i){
-  if(st[i]!=='ok') return;
+  if(st[i]!=='ok' || !CAMERAS[i] || CAMERAS[i].type==='youtube') return;
   const img=document.getElementById('img-'+i);
   document.getElementById('lb-img').src=img.src;
-  document.getElementById('lb-cap').textContent='カメラ p-'+pad(CAMERAS[i].pid);
+  document.getElementById('lb-cap').textContent=CAMERAS[i].name+' — '+CAMERAS[i].loc;
   document.getElementById('lb').classList.add('open'); lbIdx=i;
 }
 function closeLb(){ document.getElementById('lb').classList.remove('open'); lbIdx=null; }
