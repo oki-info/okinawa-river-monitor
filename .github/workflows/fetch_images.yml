@@ -15,6 +15,8 @@ jobs:
       - name: 画像取得とJSON記録
         run: |
           mkdir -p img_cam
+
+          # ── 沖縄県河川カメラ（p-01〜p-99 自動スキャン）──
           BASE="http://bousai-kasen.pref.okinawa.jp/river/kasen/img_cam"
 
           for N in $(seq 1 99); do
@@ -26,8 +28,32 @@ jobs:
               "${BASE}/p-${PID}.jpg" && echo "OK: p-${PID}" || rm -f "img_cam/p-${PID}.jpg"
           done
 
-          echo "=== 取得成功一覧 ==="
+          echo "=== 沖縄県河川カメラ 取得成功一覧 ==="
           ls img_cam/
+
+          # ── 沖縄市水位監視カメラ（HTTPS直接取得）──
+          echo "=== 沖縄市カメラ取得 ==="
+
+          # 比謝川
+          curl -sf --max-time 15 --retry 2 \
+            -H "User-Agent: Mozilla/5.0" \
+            -o "img_cam/okinawa-city-hija.jpg" \
+            "https://www.city.okinawa.okinawa.jp/suiikanshi/hijacam/hijacam.jpg" \
+            && echo "OK: 比謝川" || echo "NG: 比謝川"
+
+          # 泡瀬1
+          curl -sf --max-time 15 --retry 2 \
+            -H "User-Agent: Mozilla/5.0" \
+            -o "img_cam/okinawa-city-awase1.jpg" \
+            "https://www.city.okinawa.okinawa.jp/suiikanshi/awasecam01/TRIFORA.jpg" \
+            && echo "OK: 泡瀬1" || echo "NG: 泡瀬1"
+
+          # 泡瀬2
+          curl -sf --max-time 15 --retry 2 \
+            -H "User-Agent: Mozilla/5.0" \
+            -o "img_cam/okinawa-city-awase2.jpg" \
+            "https://www.city.okinawa.okinawa.jp/suiikanshi/awasecam02/TRIFORA.jpg" \
+            && echo "OK: 泡瀬2" || echo "NG: 泡瀬2"
 
       - name: cameras.json を生成
         run: |
@@ -38,6 +64,7 @@ jobs:
           JST = timezone(timedelta(hours=9))
           now = datetime.now(JST)
 
+          # 沖縄県河川カメラ
           files = sorted(glob.glob('img_cam/p-*.jpg'))
           cameras = []
           for f in files:
@@ -46,17 +73,36 @@ jobs:
               if size > 100:
                   cameras.append({'pid': pid, 'size': size})
 
+          # 沖縄市カメラ
+          okinawa_city = [
+              {'key': 'okinawa-city-hija',   'name': '比謝川',  'loc': '沖縄市（水位監視）'},
+              {'key': 'okinawa-city-awase1',  'name': '泡瀬川①', 'loc': '沖縄市（水位監視）'},
+              {'key': 'okinawa-city-awase2',  'name': '泡瀬川②', 'loc': '沖縄市（水位監視）'},
+          ]
+          extra_cameras = []
+          for cam in okinawa_city:
+              f = f"img_cam/{cam['key']}.jpg"
+              if os.path.exists(f):
+                  size = os.path.getsize(f)
+                  if size > 100:
+                      extra_cameras.append({
+                          'key': cam['key'],
+                          'name': cam['name'],
+                          'loc': cam['loc'],
+                          'size': size
+                      })
+
           status = {
               'last_fetch_jst': now.strftime('%Y-%m-%d %H:%M:%S'),
               'camera_count': len(cameras),
-              'cameras': cameras
+              'cameras': cameras,
+              'extra_cameras': extra_cameras
           }
           with open('cameras.json', 'w', encoding='utf-8') as f:
               json.dump(status, f, ensure_ascii=False, indent=2)
 
-          print(f"有効カメラ数: {len(cameras)}")
-          for c in cameras:
-              print(f"  p-{c['pid']} ({c['size']} bytes)")
+          print(f"沖縄県河川カメラ: {len(cameras)}台")
+          print(f"沖縄市カメラ: {len(extra_cameras)}台")
           PYEOF
 
       - name: コミット・プッシュ
