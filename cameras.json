@@ -1,5 +1,5 @@
 {
-  "last_fetch_jst": "2026-05-30 11:02:46",
+  "last_fetch_jst": "2026-05-30 14:55:47",
   "camera_count": 42,
   "cameras": [
     {
@@ -176,7 +176,7 @@
       "key": "okinawa-city-hija",
       "name": "比謝川",
       "loc": "沖縄市（水位監視）",
-      "size": 46261
+      "size": 43263
     },
     {
       "key": "okinawa-city-awase1",
@@ -188,7 +188,7 @@
       "key": "okinawa-city-awase2",
       "name": "泡瀬川②",
       "loc": "沖縄市（水位監視）",
-      "size": 23716
+      "size": 23932
     }
   ]
 }
